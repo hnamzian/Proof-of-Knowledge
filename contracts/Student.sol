@@ -18,7 +18,9 @@ contract Student is Course {
     }
 
     student[] AllStudents;
-    mapping(address => uint256) StudentIndex; 
+    mapping(address => uint256) StudentIndex;
+
+    mapping(address => uint256) balances;
 
     function RegisterNewStudent(address _student, string _name) public onlyOwner {
         uint256 studentIndex = AllStudents.length;
@@ -47,6 +49,7 @@ contract Student is Course {
         if (_Student.MilestoneProgress[milestoneIndex] == 100) {
             _Student.MilestonesDone[milestoneIndex] = true;
             _Student.Rewards.add(getMilestoneReward(courseIndex, milestoneIndex));
+            balances[_student].add(getMilestoneReward(courseIndex, milestoneIndex));
         }
     }
 
@@ -64,6 +67,7 @@ contract Student is Course {
             _Student.MilestonesDone[milestoneIndex] = true;
             _Student.Rewards.add(getMilestoneReward(courseIndex, milestoneIndex));
         }
+        balances[_student].add(getMilestoneReward(courseIndex, milestoneIndex));
     }
 
     function quizCompleted(address _student, uint256 _courseCode, uint256 _milestoneCode, uint256 _quizCode) public onlyOwner {
@@ -80,5 +84,12 @@ contract Student is Course {
             _Student.MilestonesDone[milestoneIndex] = true;
             _Student.Rewards.add(getMilestoneReward(courseIndex, milestoneIndex));
         }
+        balances[_student].add(getMilestoneReward(courseIndex, milestoneIndex));
+    }
+
+    function getStudentRewards(address _student) public view returns (uint256) {
+        uint256 index = StudentIndex[_student];
+        student memory student_ = AllStudents[index];
+        return student_.Rewards;
     }
 }
