@@ -13,7 +13,10 @@ contract Student is Course {
         mapping(uint256 => bool) CoursesDone;
         mapping(uint256 => bool) VideosDone;
         mapping(uint256 => bool) CodesDone;
+        mapping(uint256 => uint8) CodeResult;
         mapping(uint256 => bool) QuizesDone;
+        mapping(uint256 => uint8) QuizResult;
+
         uint256 Rewards;
     }
 
@@ -53,7 +56,14 @@ contract Student is Course {
         }
     }
 
-    function codeProjectCompleted(address _student, uint256 _courseCode, uint256 _milestoneCode, uint256 _codeProjectCode) public onlyOwner {
+    function codeProjectCompleted(
+        address _student, 
+        uint256 _courseCode, 
+        uint256 _milestoneCode, 
+        uint256 _codeProjectCode, 
+        uint8 _result) 
+        public onlyOwner 
+    {
         uint256 studentIndex = StudentIndex[_student];
         uint256 courseIndex = getCourseIndex(_courseCode);
         uint256 milestoneIndex = getMilestoneIndex(_milestoneCode);
@@ -65,12 +75,19 @@ contract Student is Course {
         _Student.MilestoneProgress[milestoneIndex] += progress;
         if (_Student.MilestoneProgress[milestoneIndex] == 100) {
             _Student.MilestonesDone[milestoneIndex] = true;
-            _Student.Rewards.add(getMilestoneReward(courseIndex, milestoneIndex));
+            _Student.Rewards.add(getMilestoneReward(courseIndex, milestoneIndex).mul(_result).div(100));
         }
         balances[_student].add(getMilestoneReward(courseIndex, milestoneIndex));
     }
 
-    function quizCompleted(address _student, uint256 _courseCode, uint256 _milestoneCode, uint256 _quizCode) public onlyOwner {
+    function quizCompleted(
+        address _student, 
+        uint256 _courseCode, 
+        uint256 _milestoneCode, 
+        uint256 _quizCode,
+        uint8 _result) 
+        public onlyOwner 
+    {
         uint256 studentIndex = StudentIndex[_student];
         uint256 courseIndex = getCourseIndex(_courseCode);
         uint256 milestoneIndex = getMilestoneIndex(_milestoneCode);
@@ -82,7 +99,7 @@ contract Student is Course {
         _Student.MilestoneProgress[milestoneIndex] += progress;
         if (_Student.MilestoneProgress[milestoneIndex] == 100) {
             _Student.MilestonesDone[milestoneIndex] = true;
-            _Student.Rewards.add(getMilestoneReward(courseIndex, milestoneIndex));
+            _Student.Rewards.add(getMilestoneReward(courseIndex, milestoneIndex).mul(_result).div(100));
         }
         balances[_student].add(getMilestoneReward(courseIndex, milestoneIndex));
     }
