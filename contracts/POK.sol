@@ -51,7 +51,13 @@ contract POKToken is Student {
         emit Approval(msg.sender, _spender, _value);
         return true;
     }
-
+	
+	function increaseApproval(address _spender, uint _addedValue) public returns (bool) {
+		allowed[msg.sender][_spender] = allowed[msg.sender][_spender].add(_addedValue);
+		emit Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
+		return true;
+	}
+	
     function allowance(address _owner, address _spender) public view returns (uint256) {
         return allowed[_owner][_spender];
     }
